@@ -27,9 +27,9 @@ instances:
         }],
         'expected_metrics': {
             'server1': [
-                ('supervisord.process.count', 1, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'status:up']}),
-                ('supervisord.process.count', 1, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'status:down']}),
-                ('supervisord.process.count', 1, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'status:unknown']}),
+                ('supervisord.process.count', 1, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'supervisord_group:mysql', 'status:up']}),
+                ('supervisord.process.count', 1, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'supervisord_group:java', 'status:down']}),
+                ('supervisord.process.count', 1, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'supervisord_group:python', 'status:unknown']}),
                 ('supervisord.process.uptime', 0, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'supervisord_process:python']}),
                 ('supervisord.process.uptime', 125, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'supervisord_process:mysql']}),
                 ('supervisord.process.uptime', 0, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'supervisord_process:java']})
@@ -82,16 +82,16 @@ instances:
         }],
         'expected_metrics': {
             'server0': [
-                ('supervisord.process.count', 0, {'type': 'gauge', 'tags': ['supervisord_server:server0', 'status:up']}),
-                ('supervisord.process.count', 2, {'type': 'gauge', 'tags': ['supervisord_server:server0', 'status:down']}),
-                ('supervisord.process.count', 0, {'type': 'gauge', 'tags': ['supervisord_server:server0', 'status:unknown']}),
+                ('supervisord.process.count', 0, {'type': 'gauge', 'tags': ['supervisord_server:server0', 'supervisord_group:mysql', 'status:up']}),
+                ('supervisord.process.count', 2, {'type': 'gauge', 'tags': ['supervisord_server:server0', 'supervisord_group:java', 'status:down']}),
+                ('supervisord.process.count', 0, {'type': 'gauge', 'tags': ['supervisord_server:server0', 'supervisord_group:python' 'status:unknown']}),
                 ('supervisord.process.uptime', 0, {'type': 'gauge', 'tags': ['supervisord_server:server0', 'supervisord_process:apache2']}),
                 ('supervisord.process.uptime', 2, {'type': 'gauge', 'tags': ['supervisord_server:server0', 'supervisord_process:webapp']}),
             ],
             'server1': [
-                ('supervisord.process.count', 0, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'status:up']}),
-                ('supervisord.process.count', 1, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'status:down']}),
-                ('supervisord.process.count', 0, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'status:unknown']}),
+                ('supervisord.process.count', 0, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'supervisord_group:mysql', 'status:up']}),
+                ('supervisord.process.count', 1, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'supervisord_group:java', 'status:down']}),
+                ('supervisord.process.count', 0, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'supervisord_group:python', 'status:unknown']}),
                 ('supervisord.process.uptime', 0, {'type': 'gauge', 'tags': ['supervisord_server:server1', 'supervisord_process:ruby']})
             ]
         },

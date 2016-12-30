@@ -41,6 +41,8 @@ SERVER_TAG = 'supervisord_server'
 
 PROCESS_TAG = 'supervisord_process'
 
+GROUP_TAG = 'supervisord_group'
+
 FORMAT_TIME = lambda x: time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(x))
 
 SERVER_SERVICE_CHECK = 'supervisord.can_connect'
@@ -58,6 +60,7 @@ class SupervisordCheck(AgentCheck):
         server_service_check_tags = ['%s:%s' % (SERVER_TAG, server_name)]
         supe = self._connect(instance)
         count_by_status = defaultdict(int)
+        count_status_by_group = {}
 
         # Gather all process information
         try:
@@ -126,27 +129,39 @@ class SupervisordCheck(AgentCheck):
             if process['name'] in proc_names and process not in monitored_processes:
                 monitored_processes.append(process)
 
+        # Set default counter for group and status
+        for proc in monitored_processes:
+            status = DD_STATUS[proc['statename']]
+            count_status_by_group[proc['group']] = {}
+            for status in PROCESS_STATUS:
+               count_status_by_group[proc['group']][status]=({'status': status, 'group': proc['group'], 'proc': proc['name'], 'count': 0})
+
         # Report service checks and uptime for each process
         for proc in monitored_processes:
             proc_name = proc['name']
+            group_name = proc['group']
             tags = ['%s:%s' % (SERVER_TAG, server_name),
-                    '%s:%s' % (PROCESS_TAG, proc_name)]
+                    '%s:%s' % (PROCESS_TAG, proc_name),
+                    '%s:%s' % (GROUP_TAG, group_name)]
 
             # Report Service Check
             status = DD_STATUS[proc['statename']]
             msg = self._build_message(proc)
-            count_by_status[status] += 1
             self.service_check(PROCESS_SERVICE_CHECK,
                                status, tags=tags, message=msg)
+            # Update counter for status by group
+            count_status_by_group[proc['group']][status].update({'status': status, 'group': proc['group'], 'proc': proc['name'], 'count': count_status_by_group[proc['group']][status]['count']+1})
             # Report Uptime
             uptime = self._extract_uptime(proc)
             self.gauge('supervisord.process.uptime', uptime, tags=tags)
-
-        # Report counts by status
-        tags = ['%s:%s' % (SERVER_TAG, server_name)]
-        for status in PROCESS_STATUS:
-            self.gauge('supervisord.process.count', count_by_status[status],
-                       tags=tags + ['status:%s' % PROCESS_STATUS[status]])
+        
+        # Report counts by group and status
+        for group in count_status_by_group:
+            for status in count_status_by_group[group]:
+                tags = ['%s:%s' % (SERVER_TAG, server_name),
+                        '%s:%s' % (GROUP_TAG, group)]
+                self.gauge('supervisord.process.count', count_status_by_group[group][status]['count'],
+                           tags=tags + ['status:%s' % PROCESS_STATUS[status]])
 
     @staticmethod
     def _connect(instance):
